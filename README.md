@@ -1,12 +1,12 @@
 # Windows Endpoint Security Baseline Audit
 
-A read-only PowerShell utility for collecting selected Windows endpoint security configuration data and evaluating defined controls against a simple PASS/WARN baseline.
+A read-only PowerShell utility for collecting selected Windows endpoint security configuration data and evaluating defined controls against a simple PASS/WARN/UNKNOWN baseline.
 
 ## Overview
 
 This project builds on basic Windows endpoint information collection by introducing security-focused configuration auditing and conditional assessment.
 
-The script queries several Windows security controls, presents their current configuration, and evaluates selected conditions using clear **PASS/WARN** results.
+The script queries several Windows security controls, presents their current configuration, and evaluates selected conditions using clear **PASS/WARN/UNKNOWN** results.
 
 The script is **read-only** and does not modify Windows configuration.
 
@@ -39,10 +39,13 @@ The script evaluates the following conditions:
 - Built-in Guest account disabled
 - User Account Control enabled
 
-Each evaluated condition produces either:
+Each evaluated condition produces one of:
 
 - **PASS** — the defined condition was satisfied
 - **WARN** — the defined condition was not satisfied
+- **UNKNOWN** — the data could not be retrieved, so no result is claimed
+
+Each check is wrapped in error handling, so a failed query (for example, SMBv1 without Administrator rights, or Defender replaced by third-party antivirus) is reported as UNKNOWN rather than as a false WARN. The script warns at startup if it is not running elevated and ends with PASS/WARN/UNKNOWN summary totals.
 
 A PASS result applies only to the specific condition tested by the script.
 
@@ -119,7 +122,7 @@ This portion of the audit displays Windows Firewall, Microsoft Defender, local a
 
 This portion displays PowerShell execution policy, User Account Control, recent hotfix information, and the resulting PASS/WARN baseline assessment.
 
-The screenshots represent a successful local test run of the project.
+The screenshots represent a successful local test run of an earlier version of the project. The current version adds UNKNOWN results and summary totals.
 
 ## PowerShell Concepts Demonstrated
 
@@ -198,10 +201,6 @@ It does not:
 
 Potential future development includes:
 
-- Explicit UNKNOWN handling for unavailable control data
-- Additional error handling
-- Human-readable UAC consent-policy descriptions
-- PASS/WARN/UNKNOWN summary totals
 - BitLocker status
 - Secure Boot status
 - Remote Desktop configuration
